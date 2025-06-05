@@ -374,7 +374,7 @@ export const searchByAudio = async (req, res) => {
         .status(400)
         .json({ success: false, message: "No audio file uploaded" });
     }
-
+console.log("Uploaded file path:", req.file.path); 
     // Transcribe audio file to text
     const transcript = await transcribeAudio(req.file.path);
 

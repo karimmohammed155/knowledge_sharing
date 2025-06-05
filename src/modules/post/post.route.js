@@ -46,6 +46,6 @@ post_router.delete(
 );
 
 post_router.get('/search', post_controller.searchByText); 
-post_router.post('/search/audio', fileAudioUpload.single('audio'),post_controller.searchByAudio);
+post_router.post('/search/audio', fileAudioUpload.single('audio'), error_handle(post_controller.searchByAudio));
 
 export { post_router };
