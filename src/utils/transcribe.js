@@ -6,13 +6,10 @@ const client = new AssemblyAI({
   apiKey: '8ab01a9496234811bcd7b26be2a02bf5',
 });
 
-const transcribeAudio = async (filePath) => {
+const transcribeAudio = async (audioBuffer) => {
   try {
-    const fullPath = path.resolve(filePath);
-    console.log("Uploading from:", fullPath);
 
-    const fileStream = fs.createReadStream(fullPath);
-    const audioUrl = await client.files.upload(fileStream);
+    const audioUrl = await client.files.upload(audioBuffer);
 
     const transcript = await client.transcripts.transcribe({ audio_url: audioUrl });
 

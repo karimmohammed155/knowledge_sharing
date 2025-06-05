@@ -374,9 +374,9 @@ export const searchByAudio = async (req, res) => {
         .status(400)
         .json({ success: false, message: "No audio file uploaded" });
     }
-console.log("Uploaded file path:", req.file.path); 
+
     // Transcribe audio file to text
-    const transcript = await transcribeAudio(req.file.path);
+    const transcript = await transcribeAudio(req.file.buffer);
 
     if (!transcript) {
       return res
@@ -386,15 +386,6 @@ console.log("Uploaded file path:", req.file.path);
 
     // Perform text search with the transcript
     const results = await post.find({ $text: { $search: transcript } });
-
-    // Delete the uploaded audio file after processing
-    // Delete file from Cloudinary using public_id
-     try {
-      await fs.unlink(req.file.path);
-      console.log(`Deleted temporary file: ${req.file.path}`);
-    } catch (err) {
-      console.error('Error deleting temp file:', err);
-    }
 
     res.json({ success: true, transcript, results });
   } catch (err) {
