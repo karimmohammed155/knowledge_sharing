@@ -7,7 +7,7 @@ import {
 } from "../../../DB/models/index.js";
 import { cloudinary, Error_handler_class } from "../../utils/index.js";
 import transcribeAudio from "../../utils/transcribe.js";
-import fs from "fs";
+import fs from "fs/promises";
 import { Filter } from "bad-words";
 import { Client } from "@gradio/client";
 
@@ -389,11 +389,12 @@ export const searchByAudio = async (req, res) => {
 
     // Delete the uploaded audio file after processing
     // Delete file from Cloudinary using public_id
-    const publicId = req.file.filename;
-    cloudinary.uploader.destroy(`audio_uploads/${publicId}`, { resource_type: 'video' }, (error, result) => {
-      if (error) console.error("Cloudinary deletion error:", error);
-      else console.log("File deleted from Cloudinary:", result);
-    });
+     try {
+      await fs.unlink(req.file.path);
+      console.log(`Deleted temporary file: ${req.file.path}`);
+    } catch (err) {
+      console.error('Error deleting temp file:', err);
+    }
 
     res.json({ success: true, transcript, results });
   } catch (err) {

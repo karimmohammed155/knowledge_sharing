@@ -1,22 +1,39 @@
 // src/middleware/upload.js
-import multer from "multer";
-// middleware/cloudinaryUpload.js
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer, { diskStorage } from "multer";
+import path from "path";
+import os from "os";
 
-import {cloudinary} from './cloudinary.js';
+export const fileAudioUpload = multer({
+  storage: diskStorage({
+    destination: (req, file, cb) => {
+      cb(null,os.tmpdir());  // use writable /tmp folder
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+      cb(null, uniqueName);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = [
+      "audio/mpeg",
+      "audio/wav",
+      "audio/mp3",
+      "audio/x-m4a",
+      "audio/mp4",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+      "application/pdf",
+    ];
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'audio_uploads',
-    resource_type: 'auto', // Allows audio files
-    format: async (req, file) => file.originalname.split('.').pop(),
-    public_id: (req, file) => `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(new Error("Invalid file format"), false);
+    }
+    cb(null, true);
   },
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max file size
 });
 
-
-
-const parser = multer({ storage });
-
-export  default parser;
+export default fileAudioUpload;

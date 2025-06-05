@@ -6,7 +6,7 @@ import {
   multer_host,
 } from "../../middleware/index.js";
 import { extensions } from "../../utils/index.js";
-import parser from '../../utils/audioUpload.js'
+import fileAudioUpload from '../../utils/audioUpload.js'
 
 const post_router = router();
 
@@ -45,7 +45,7 @@ post_router.delete(
   error_handle(post_controller.delete_post)
 );
 
-post_router.get('/search', post_controller.searchByText); // ?query=some text
-post_router.post('/search/audio', parser.single('audio'),post_controller.searchByAudio);
+post_router.get('/search', post_controller.searchByText); 
+post_router.post('/search/audio', fileAudioUpload.single('audio'),post_controller.searchByAudio);
 
 export { post_router };
